@@ -1,0 +1,3 @@
+MAGENTO_HOME=/var/www/html
+
+* * * * *   www-data /bin/sh $MAGENTO_HOME/cron.sh >> /var/log/cron.log 2>&1

@@ -1,0 +1,44 @@
+version: '2'
+services:
+  web:
+    build: .
+    image: magento-web
+    depends_on:
+      - db
+    ports:
+      - 80:80
+    links:
+      - db:db
+    volumes_from:
+      - data
+    environment:
+      USER_ID: 1000
+      MAGE_IS_DEVELOPER_MODE: 1
+  magerun:
+    image: magento-web
+    depends_on:
+      - db
+    links:
+      - db:db
+    volumes_from:
+      - data
+    entrypoint: /entrypoint.sh magerun --root-dir=magento
+  db:
+    image: percona:5.6
+    volumes_from:
+      - data
+    environment:
+      MYSQL_ROOT_PASSWORD: magento
+      MYSQL_DATABASE: magento
+      MYSQL_USER: magento
+      MYSQL_PASSWORD: magento
+  data:
+    image: php:5.5-apache
+    volumes:
+      - ./:/var/www/html/
+      - ./*.sql:/docker-entrypoint-initdb.d/
+      - db:/var/lib/mysql
+    command: /bin/true
+volumes:
+  db:
+    driver: local
